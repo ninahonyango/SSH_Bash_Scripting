@@ -83,8 +83,7 @@ The command above is an SSH connection to the Metasploitable2 VM with compatibil
 I then generated failed password attempts manually using ssh with the old algorithm enabled as shown below:
 
 ![SSH Connection & Failed Password Attempts Screenshot](images/SSHConnectfailedPasswd.png)
-
-*Screenshot on establishing SSH connection and generating Metasploitable2 failed password attempts in Kali*
+*Screenshot on establishing SSH connection and generating Metasploitable2 failed password attempts in Kali.*
 
 I confirmed if the failed password attempt logs were reaching Metasploitable2 by executing:
 
@@ -95,8 +94,7 @@ sudo tail -f /var/log/auth.log
 As in the screenshot below, at the very bottom, we can see failed password attempts logs in Metasploitable2's /var/log/auth.log:
 
 ![Metasploitable2 Failed Password Attempts Logs Screenshot](images/failedAuthlogs.png)
-
-*Screenshot of Metasploitable2 failed password attempts logs*
+*Screenshot of Metasploitable2 failed password attempts logs.*
 
 ### Step 4: Creating Bash Script To Detect Brute-Force Attempts
 
@@ -149,8 +147,7 @@ sudo ./ssh_bruteforce_blocker.sh
 ```
 
 ![Bruteforce Blocker Script Screenshot](images/script.png)
-
-*Screenshot of the bruteforce blocker script and making it executable*
+*Screenshot of the bruteforce blocker script and making it executable.*
 
 The script was thereafter actively monitoring the logs.
 
@@ -167,8 +164,7 @@ I proceeded to enter a wrong password 6+ times.
 I then checked for the respective failed password attempts logs in Metasploitable2.
 
 ![Failed Password Attempts & IP Blocked Screenshot](images/failedPasswdIPBlocked.png)
-
-*Screenshot of failed password attempts and blocked Kali IP in Metasploitable2*
+*Screenshot of failed password attempts and blocked Kali IP in Metasploitable2.*
 
 From the above screenshot, I observed script detecting 17 failed attempts and blocking Kali IP address 192.168.56.1
 
@@ -179,8 +175,7 @@ sudo iptables -L -n
 ```
 
 ![Verifying Blocked Kali IP Screenshot](images/verifyBlockedKaliIP.png)
-
-*Screenshot on verifying blocked Kali IP in Metasploitable2*
+*Screenshot on verifying blocked Kali IP in Metasploitable2.*
 
 From the ouput above, we can see a rule: DROP       all  --  192.168.56.1        0.0.0.0/0 
 
