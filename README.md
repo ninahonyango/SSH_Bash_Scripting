@@ -6,12 +6,16 @@ This lab demostrates how to detect failed SSH login attempts in real-time and au
 
 It simulates real-world intrusion detection and prevention.
 
+---
+
 ## Objectives
 
 - Learn how to monitor SSH authentication logs (/var/log/auth.log)
 - Automate detection of repeated failed login attempts.
 - Automatically block attackers using firewall rules.
 - Test the automation using Kali Linux VM as an attack machine.
+
+---
 
 ## Lab Setup
 
@@ -35,19 +39,24 @@ Tools:
 
 - Bash scripting
 
+---
+
 ## Steps taken
 
-1. Network & Connectivity
-2. Enabling SSH on Metasploitable2
-3. Live Log Monitoring
-4. Creating Detection Script & Making it Executable
-5. Testing the Attack
-6. Verify Block
-7. Unblock Script
+1. Network & Connectivity.
+2. Enabling SSH on Metasploitable2.
+3. Live Log Monitoring in Metasploitable VM.
+4. Creating Bash Script To Detect Brute-Force Attempts.
+5. Brute-Force Attack Simulation & Verification of Blocked Kali IP.
+6. Unblock Kali IP Script. 
+
+---
 
 ### Step 1: Network & Connectivity
 
 Verified connectivity with ping from Kali Linux VM to Metasploitable2 VM which shown a successful ping test with 0% packet loss.
+
+---
 
 ### Step 2: Enable SSH on Metasploitable2 VM
 
@@ -61,10 +70,12 @@ sudo /etc/init.d/sshd start
 After enabling SSH, I then verified the service status:
 
 ```
-ps aux | grep sshd`
+ps aux | grep sshd
 ```
 
 The outcome listed the sshd process, which means that SSH is active and ready to accept connections.
+
+---
 
 ### Step 3: Live Log Monitoring in Metasploitable2 VM
 
@@ -97,6 +108,8 @@ As in the screenshot below, at the very bottom, we can see failed password attem
 ![Metasploitable2 Failed Password Attempts Logs Screenshot](images/failedAuthlogs.png)
 
 *Screenshot of Metasploitable2 failed password attempts logs.*
+
+---
 
 ### Step 4: Creating Bash Script To Detect Brute-Force Attempts
 
@@ -138,6 +151,8 @@ done
 
 Saved as ssh_bruteforce_blocker.sh
 
+A firewall rule was configured to block any IP from initiating any network communication after 5 failed password attempts. This is an effective security measure to prevent further interaction with a suspected malicious host, mitigate brute-force login attempts, and enforce network segmentation policies.
+
 To execute the script and make it usable, I ran the following commands in Metasploitable2:
 
 ```
@@ -154,7 +169,9 @@ sudo ./ssh_bruteforce_blocker.sh
 
 The script was thereafter actively monitoring the logs.
 
-### Step 5 — Brute-force attack simulation
+---
+
+### Step 5 — Brute-Force Attack Simulation & Verification of Blocked Kali IP
 
 To simulate the brute-force attack from Kali, multiple incorrect SSH logins were tried. The command below was first executed to establish a SSH connection to the Metasploitable2 VM:
 
@@ -170,7 +187,7 @@ I then checked for the respective failed password attempts logs in Metasploitabl
 
 *Screenshot of failed password attempts and blocked Kali IP in Metasploitable2.*
 
-From the above screenshot, I observed script detecting 17 failed attempts and blocking Kali IP address 192.168.56.1
+From the above screenshot, I observed script detecting 17 failed attempts and blocking Kali IP address 192.168.56.1 for exceeding the 5 failed attempts.
 
 To verify the blocked Kali IP in Metasloitable2, the command below was executed: 
 
@@ -182,5 +199,60 @@ sudo iptables -L -n
 
 *Screenshot on verifying blocked Kali IP in Metasploitable2.*
 
-From the ouput above, we can see a rule: DROP       all  --  192.168.56.1        0.0.0.0/0 
+During the firewall inspection as shown in the output above, the following rule was identified in the active configuration:
 
+`DROP       all  --  192.168.56.1        0.0.0.0/0`
+
+This rule was configured to drop all traffic originating from Kali IP 192.168.56.1 after 5 failed password attempts. The parameters are interpreted as follows:
+
+- Action: DROP — The packet is discarded without notifying the sender.
+
+- Protocol: all — The rule applies to all network protocols (TCP, UDP, ICMP, etc.).
+
+- Source: 192.168.56.1 — Traffic originating from Kali VM.
+
+- Destination: 0.0.0.0/0 — Represents all possible IP addresses on any network.
+
+The rule demonstrates a proactive network defense measure, effectively isolating traffic from Kali attacker machine to reduce the risk of unauthorized access and malicious activity.
+
+---
+
+### Step 6: Unblock Kali IP Script
+
+During the brute-force ataack simulation, the SSH brute force blocker script blocked Kali’s IP after 5 failed login attempts. This behavior was intentional for security purposes. However, to continue testing the attack without completely flushing the iptables rules, I created an "unblock" script. This script removes the DROP rule for the Kali VM and delete its corresponding entry in the blocked_ips.txt log, restoring SSH access so testing can resume. 
+
+```
+#!/bin/bash
+
+# Check if IP was provided
+if [ -z "$1" ]; then
+    echo "Usage: $0 <IP-to-unblock>"
+    exit 1
+fi
+
+IP="$1"
+
+# Remove the DROP rule for that IP
+sudo iptables -D INPUT -s "$IP" -j DROP
+
+# Confirm
+echo "[INFO] Unblocked IP: $IP"
+```
+
+The screenshot below shows the unblock_IP script successfully unblocking KAli IP: 
+
+![Unblocking Kali IP Screenshot](images/unblockIP.png)
+
+*Screenshot of bash script successfully unblocking Kali IP*
+
+---
+
+## Conclusion
+
+This project successfully demonstrated how SSH brute force attacks can be detected and mitigated in real time using a simple Bash script and Linux firewall rules (iptables). 
+
+The lab setup provided a safe, controlled environment to simulate a real-world attack scenario. Additionally, the inclusion of an unblock script allowed for efficient testing and repeated simulations without disrupting the overall firewall configuration.
+
+This exercise reinforced key cybersecurity concepts such as log monitoring, intrusion detection, automated response, and firewall management. 
+
+---
