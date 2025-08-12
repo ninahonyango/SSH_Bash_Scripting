@@ -239,7 +239,7 @@ sudo iptables -D INPUT -s "$IP" -j DROP
 echo "[INFO] Unblocked IP: $IP"
 ```
 
-The screenshot below shows the unblock_IP script successfully unblocking KAli IP: 
+The screenshot below shows the unblock_IP script successfully unblocking Kali IP: 
 
 ![Unblocking Kali IP Screenshot](images/unblockIP.png)
 
@@ -256,3 +256,5 @@ The lab setup provided a safe, controlled environment to simulate a real-world a
 This exercise reinforced key cybersecurity concepts such as log monitoring, intrusion detection, automated response, and firewall management. 
 
 ---
+
+> *Click [here](https://github.com/ninahonyango/Elizabeth_P_A_Onyango) to go back to Portfolio.*
